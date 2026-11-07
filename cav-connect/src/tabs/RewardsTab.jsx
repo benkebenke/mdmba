@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { REWARDS } from "../data/rewards";
+import { REWARDS, remainingStock } from "../data/rewards";
 import { redeemBlocker } from "../data/points";
 
 const CATS = ["All", "Merchandise", "Dining", "Experiences"];
@@ -9,7 +9,9 @@ export default function RewardsTab({ fan, onRedeem }) {
   const [confirming, setConfirming] = useState(null); // reward awaiting confirmation
   const [notice, setNotice] = useState(null);
 
-  const visible = REWARDS.filter((r) => cat === "All" || r.category === cat);
+  // Catalog with live stock: starting stock minus what's been redeemed.
+  const catalog = REWARDS.map((r) => ({ ...r, stock: remainingStock(r, fan.redemptions) }));
+  const visible = catalog.filter((r) => cat === "All" || r.category === cat);
 
   const tryRedeem = (reward) => {
     const blocker = redeemBlocker(reward, fan.balance);
@@ -22,15 +24,19 @@ export default function RewardsTab({ fan, onRedeem }) {
   };
 
   const confirm = () => {
-    // Re-check at confirm time: balance may have changed since the sheet opened.
-    const blocker = redeemBlocker(confirming, fan.balance);
+    // Re-check at confirm time against current balance and current stock —
+    // both may have changed since the sheet opened.
+    const live = catalog.find((r) => r.id === confirming.id);
+    const blocker = redeemBlocker(live, fan.balance);
     if (blocker) {
       setNotice({ kind: "err", text: blocker });
       setConfirming(null);
       return;
     }
-    onRedeem(confirming);
-    setNotice({ kind: "ok", text: `Redeemed ${confirming.name}. ${fan.balance - confirming.cost} pts left.` });
+    onRedeem(live);
+    const left = live.stock - 1;
+    const stockNote = left === 0 ? " That was the last one." : left < 10 ? ` Only ${left} left.` : "";
+    setNotice({ kind: "ok", text: `Redeemed ${live.name}. ${fan.balance - live.cost} pts left.${stockNote}` });
     setConfirming(null);
   };
 
