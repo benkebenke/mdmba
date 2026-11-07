@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
-import { pointsForCheckIn, multiSportStreak } from "../data/points";
+import { pointsForCheckIn, multiSportStreak, gateCodeBlocker } from "../data/points";
+import { GATE_CODES } from "../data/gateCodes";
 
 // Two-step bottom sheet: show a gate-scannable QR, then confirm points.
 // In the real product the gate scanner would call back; here the fan taps
@@ -28,7 +29,9 @@ function FakeQR({ seed }) {
 }
 
 export default function CheckInSheet({ event, checkIns, onConfirm, onClose }) {
-  const [step, setStep] = useState("qr"); // qr | done
+  const [step, setStep] = useState("qr"); // qr | code | done
+  const [code, setCode] = useState("");
+  const [codeError, setCodeError] = useState(null);
 
   // Freeze the calculation at the moment the sheet opens. After the scan the
   // parent's `checkIns` already includes this game, so recomputing from the
@@ -42,6 +45,16 @@ export default function CheckInSheet({ event, checkIns, onConfirm, onClose }) {
   const scan = () => {
     onConfirm();
     setStep("done");
+  };
+
+  const submitCode = (e) => {
+    e.preventDefault();
+    const blocker = gateCodeBlocker(code, GATE_CODES[event.id]);
+    if (blocker) {
+      setCodeError(blocker);
+      return;
+    }
+    scan();
   };
 
   return (
@@ -63,7 +76,31 @@ export default function CheckInSheet({ event, checkIns, onConfirm, onClose }) {
               Streak after this game: 🔥 {streakAfter}
             </p>
             <button className="btn" onClick={scan}>Simulate gate scan</button>
+            <button className="btn ghost" onClick={() => setStep("code")}>QR won't scan? Enter gate code</button>
           </>
+        )}
+
+        {step === "code" && (
+          <form onSubmit={submitCode}>
+            <div className="row">
+              <strong>Enter gate code</strong>
+              <button type="button" className="btn ghost sm" onClick={onClose}>✕</button>
+            </div>
+            <p className="muted small">Type the 4-digit code on the sign at the {event.venue} gate.</p>
+            <input
+              value={code}
+              onChange={(e) => { setCode(e.target.value); setCodeError(null); }}
+              inputMode="numeric"
+              maxLength={4}
+              autoFocus
+              aria-label="Gate code"
+              placeholder="0000"
+              style={{ display: "block", width: "100%", boxSizing: "border-box", margin: "12px 0", padding: "12px", fontSize: 24, letterSpacing: 8, textAlign: "center", border: "1.5px solid #d1d5db", borderRadius: 10 }}
+            />
+            {codeError && <div className="notice err" style={{ marginBottom: 10 }}>{codeError}</div>}
+            <button type="submit" className="btn">Check in</button>
+            <button type="button" className="btn ghost" onClick={() => { setStep("qr"); setCodeError(null); }}>Back to QR</button>
+          </form>
         )}
 
         {step === "done" && (
