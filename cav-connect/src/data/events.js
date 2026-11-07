@@ -1,0 +1,81 @@
+// Mock schedule of UVA spring-sport home events.
+// `status` drives check-in rules: "live" events can be checked into,
+// "upcoming" cannot yet, "past" can no longer.
+// `basePoints` is what a fan earns for attending; underserved sports earn more.
+
+export const EVENTS = [
+  {
+    id: "sb-duke",
+    sport: "Softball",
+    opponent: "Duke",
+    venue: "Palmer Park",
+    date: "Sat, Nov 7",
+    time: "1:00 PM",
+    status: "live",
+    basePoints: 75,
+    storyline: "No. 12 Cavaliers, 4-game win streak",
+  },
+  {
+    id: "wlax-unc",
+    sport: "Women's Lacrosse",
+    opponent: "North Carolina",
+    venue: "Klöckner Stadium",
+    date: "Sat, Nov 7",
+    time: "4:00 PM",
+    status: "live",
+    basePoints: 75,
+    storyline: "Top-10 matchup — Commonwealth Clash preview",
+  },
+  {
+    id: "wten-vt",
+    sport: "Women's Tennis",
+    opponent: "Virginia Tech",
+    venue: "Boar's Head",
+    date: "Sun, Nov 8",
+    time: "12:00 PM",
+    status: "upcoming",
+    basePoints: 100,
+    storyline: "Commonwealth Clash",
+  },
+  {
+    id: "swim-nc",
+    sport: "Swimming & Diving",
+    opponent: "NC State",
+    venue: "Aquatic & Fitness Center",
+    date: "Fri, Nov 13",
+    time: "6:00 PM",
+    status: "upcoming",
+    basePoints: 100,
+    storyline: "Defending national champions",
+  },
+  {
+    id: "mbb-vt",
+    sport: "Men's Basketball",
+    opponent: "Virginia Tech",
+    venue: "John Paul Jones Arena",
+    date: "Sat, Nov 14",
+    time: "7:00 PM",
+    status: "upcoming",
+    basePoints: 25,
+    storyline: "ACC opener",
+  },
+  {
+    id: "sb-lib",
+    sport: "Softball",
+    opponent: "Liberty",
+    venue: "Palmer Park",
+    date: "Wed, Nov 4",
+    time: "5:00 PM",
+    status: "past",
+    basePoints: 75,
+    storyline: "",
+  },
+];
+
+export const SPORT_EMOJI = {
+  Softball: "🥎",
+  "Women's Lacrosse": "🥍",
+  "Women's Tennis": "🎾",
+  "Swimming & Diving": "🏊",
+  "Men's Basketball": "🏀",
+};
