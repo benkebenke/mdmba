@@ -36,6 +36,15 @@ export function checkInBlocker(event, checkIns) {
   return null;
 }
 
+// Fallback when the QR won't scan: the fan types the code on the gate sign.
+// Returns null if the code matches this game, otherwise a user-facing reason.
+export function gateCodeBlocker(entered, expected) {
+  const code = entered.trim();
+  if (!/^\d{4}$/.test(code)) return "Enter the 4-digit code from the sign at the gate.";
+  if (code !== expected) return "That code doesn't match this game. Check the gate sign and try again.";
+  return null;
+}
+
 // Returns null if the fan may redeem, otherwise a user-facing reason.
 export function redeemBlocker(reward, balance) {
   if (!reward) return "That reward is no longer available.";
