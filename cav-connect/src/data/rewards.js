@@ -1,5 +1,6 @@
 // Rewards catalog (from the Cav Connect prototype, slide 10).
-// `stock` lets the merch tab show sold-out items — a failure scenario.
+// `stock` is the starting inventory. Each redemption uses one up — see
+// remainingStock() below — so limited items can actually sell out.
 
 export const REWARDS = [
   {
@@ -63,3 +64,10 @@ export const REWARDS = [
     emoji: "🧥",
   },
 ];
+
+// How many of this reward are left after the fan's own redemptions.
+// (Front-end prototype: there's no server, so inventory is tracked per device.)
+export function remainingStock(reward, redemptions) {
+  const used = redemptions.filter((x) => x.rewardId === reward.id).length;
+  return Math.max(0, reward.stock - used);
+}
