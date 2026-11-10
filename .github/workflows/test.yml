@@ -1,0 +1,24 @@
+# Runs the Cav Connect unit + integration tests on GitHub's machines
+# whenever anyone pushes or opens/updates a pull request.
+# No keys or secrets are used.
+name: Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: cav-connect   # the app lives in this subfolder
+    steps:
+      - uses: actions/checkout@v4          # get the code
+      - uses: actions/setup-node@v4        # install Node 22
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: cav-connect/package-lock.json
+      - run: npm ci                        # install exact dependency versions
+      - run: npm test                      # same command you run locally
